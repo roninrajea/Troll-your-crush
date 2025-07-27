@@ -2,156 +2,225 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Do you like me?</title>
+  <title>Do you like me? 🥺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       width: 100%;
-      overflow: hidden;
-      background-color: #fff0f5;
+      background: linear-gradient(to right, #ffe6f0, #fff0f5);
       font-family: 'Comic Sans MS', cursive, sans-serif;
+      overflow: hidden;
     }
 
     h1 {
       text-align: center;
-      margin-top: 30px;
+      margin-top: 20px;
       color: #ff3399;
+      font-size: 2em;
+      animation: float 2s ease-in-out infinite;
+      padding: 0 10px;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
 
     .container {
       position: relative;
-      width: 100vw;
-      height: calc(100vh - 60px);
+      width: 100%;
+      height: 60%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
 
     button {
-      padding: 15px 25px;
-      font-size: 18px;
+      padding: 12px 22px;
+      font-size: 1em;
       border: none;
       border-radius: 10px;
+      margin: 10px;
       cursor: pointer;
-      position: absolute;
-      transition: top 0.2s, left 0.2s;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
     #yesBtn {
-      background-color: #28a745;
+      background-color: #ff66b2;
       color: white;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
     }
 
     #noBtn {
-      background-color: #dc3545;
+      background-color: #ff9999;
       color: white;
+      position: absolute;
     }
 
     #funnyMessage {
       position: absolute;
       font-size: 14px;
-      color: #990099;
+      color: #cc3399;
       font-weight: bold;
+      max-width: 80%;
+      text-align: center;
       z-index: 100;
+    }
+
+    #gifContainer {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #gifContainer img {
+      width: 80%;
+      max-width: 300px;
+      border-radius: 15px;
+      box-shadow: 0 0 30px pink;
+    }
+
+    audio {
+      display: none;
+    }
+
+    .emoji {
+      position: fixed;
+      font-size: 20px;
+      animation: floaty 5s linear infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes floaty {
+      0% { transform: translateY(100vh); opacity: 1; }
+      100% { transform: translateY(-10vh); opacity: 0; }
     }
   </style>
 </head>
 <body>
-  <h1>Do you like me? 🥺</h1>
+  <h1>Do you like me? 🥺💕</h1>
+
   <div class="container" id="container">
-    <button id="yesBtn">Yes</button>
-    <button id="noBtn">No</button>
+    <button id="yesBtn">Yes 💖</button>
+    <button id="noBtn">No 🙄</button>
     <div id="funnyMessage"></div>
   </div>
 
-  <script>
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn = document.getElementById("noBtn");
-    const funnyMessage = document.getElementById("funnyMessage");
-    const container = document.getElementById("container");
+  <div id="gifContainer">
+    <img src="https://gifdb.com/images/high/shy-white-bear-cartoon-funny-love-4piah4utp1e9b264.gif" alt="cute bear gif">
+    <p style="color: hotpink; font-size: 1.4em; margin-top: 15px;">Yay! I like you too! 💖🥰</p>
+  </div>
 
-    const messages = [
-      "Nope! 😜",
-      "Missed again!",
-      "Haha too slow!",
-      "You're really trying?",
-      "Denied!",
-      "Catch me 🏃‍♂️💨",
-      "Stop that 😂",
-      "Too easy!",
-      "Still no? Lmao",
-      "Final dodge!"
-    ];
+  <audio autoplay loop>
+    <source src="https://cdn.pixabay.com/download/audio/2023/03/05/audio_f1c39cf5e6.mp3?filename=love-you-14352.mp3" type="audio/mpeg">
+  </audio>
 
-    let moveCount = 0;
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<script>
+  const yesBtn = document.getElementById("yesBtn");
+  const noBtn = document.getElementById("noBtn");
+  const funnyMessage = document.getElementById("funnyMessage");
+  const container = document.getElementById("container");
+  const gifContainer = document.getElementById("gifContainer");
 
-    function clamp(val, min, max) {
-      return Math.max(min, Math.min(max, val));
-    }
+  const messages = [
+    "Nope! 😜", "Missed again!", "Haha too slow!", "You're really trying?",
+    "Denied! 😂", "OMG, just click yes!!!", "Accept your fate😆", "Too easy!", "R U really trying to run away from love?💖"
+  ];
 
-    function moveNoButton() {
-      const containerRect = container.getBoundingClientRect();
-      const btnWidth = noBtn.offsetWidth;
-      const btnHeight = noBtn.offsetHeight;
-      const buffer = 40;
+  let moveCount = 0;
 
-      const maxX = containerRect.width - btnWidth - buffer;
-      const maxY = containerRect.height - btnHeight - buffer;
+  function clamp(val, min, max) {
+    return Math.max(min, Math.min(max, val));
+  }
 
-      const randX = clamp(Math.floor(Math.random() * (maxX - buffer)) + buffer, buffer, maxX);
-      const randY = clamp(Math.floor(Math.random() * (maxY - buffer)) + buffer, buffer, maxY);
+  function moveNoButton() {
+    const containerRect = container.getBoundingClientRect();
+    const yesBtnRect = yesBtn.getBoundingClientRect();
+    const btnWidth = noBtn.offsetWidth;
+    const btnHeight = noBtn.offsetHeight;
+    const margin = 50;
 
-      noBtn.style.left = `${randX}px`;
-      noBtn.style.top = `${randY}px`;
+    let randX, randY;
+    let overlap = true;
 
-      funnyMessage.innerText = messages[moveCount % messages.length];
-      funnyMessage.style.left = `${randX + btnWidth + 10}px`;
-      funnyMessage.style.top = `${randY}px`;
+    while (overlap) {
+      randX = clamp(Math.random() * (containerRect.width - btnWidth - margin), margin, containerRect.width - btnWidth - margin);
+      randY = clamp(Math.random() * (containerRect.height - btnHeight - margin), margin, containerRect.height - btnHeight - margin);
 
-      moveCount++;
+      const noBtnRect = {
+        left: randX,
+        top: randY,
+        right: randX + btnWidth,
+        bottom: randY + btnHeight
+      };
 
-      if (moveCount >= 10) {
-        noBtn.style.display = "none";
-        funnyMessage.innerText = "‘No’ button died of exhaustion 😂💀";
-        funnyMessage.style.left = "50%";
-        funnyMessage.style.top = "60%";
-        funnyMessage.style.transform = "translate(-50%, -50%)";
-      }
-    }
-
-    function placeNoBelowYes() {
-      const yesRect = yesBtn.getBoundingClientRect();
-      const noWidth = noBtn.offsetWidth;
-      const noHeight = noBtn.offsetHeight;
-      const buffer = 40;
-
-      const startX = clamp(
-        yesRect.left + yesRect.width / 2 - noWidth / 2,
-        buffer,
-        window.innerWidth - noWidth - buffer
+      overlap = !(
+        noBtnRect.right < yesBtnRect.left ||
+        noBtnRect.left > yesBtnRect.right ||
+        noBtnRect.bottom < yesBtnRect.top ||
+        noBtnRect.top > yesBtnRect.bottom
       );
-      const startY = clamp(
-        yesRect.bottom + 20,
-        buffer,
-        window.innerHeight - noHeight - buffer
-      );
-
-      noBtn.style.left = `${startX}px`;
-      noBtn.style.top = `${startY}px`;
     }
 
-    window.onload = () => {
-      setTimeout(() => {
-        placeNoBelowYes();
-      }, 50);
-    };
+    noBtn.style.left = `${randX}px`;
+    noBtn.style.top = `${randY}px`;
 
-    noBtn.addEventListener("mouseenter", moveNoButton);
-    yesBtn.addEventListener("click", () => {
-      document.body.innerHTML = "<h1>YAY!! I KNEW IT 💖🥳</h1>";
+    funnyMessage.innerText = messages[moveCount % messages.length];
+    funnyMessage.style.left = `${randX}px`;
+    funnyMessage.style.top = `${randY - 25}px`;
+
+    moveCount++;
+
+    if (moveCount >= 10) {
+      noBtn.style.display = "none";
+      funnyMessage.innerText = "‘No’ button died of embarrassment 😂💀";
+      funnyMessage.style.left = "50%";
+      funnyMessage.style.top = "60%";
+      funnyMessage.style.transform = "translate(-50%, -50%)";
+    }
+  }
+
+  function spawnEmojis() {
+    const emojis = ["💘", "💕", "🥺", "💓", "🌸", "✨", "💗", "💝", "💞", "❣️"];
+    setInterval(() => {
+      const emoji = document.createElement("div");
+      emoji.classList.add("emoji");
+      emoji.style.left = `${Math.random() * window.innerWidth}px`;
+      emoji.style.top = `${window.innerHeight + 20}px`;
+      emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      document.body.appendChild(emoji);
+      setTimeout(() => emoji.remove(), 5000);
+    }, 400);
+  }
+
+  window.onload = () => {
+    spawnEmojis();
+
+    // Initial noBtn position
+    const yesRect = yesBtn.getBoundingClientRect();
+    noBtn.style.left = `${yesRect.left + yesRect.width / 2 - noBtn.offsetWidth / 2}px`;
+    noBtn.style.top = `${yesRect.bottom + 20}px`;
+
+  };
+
+  noBtn.addEventListener("mouseenter", moveNoButton);
+
+  yesBtn.addEventListener("click", () => {
+    document.querySelector("h1").remove();
+    container.remove();
+    gifContainer.style.display = "block";
+    confetti({
+      particleCount: 200,
+      spread: 180,
+      origin: { y: 0.6 }
     });
-  </script>
+  });
+</script>
+
 </body>
 </html>
